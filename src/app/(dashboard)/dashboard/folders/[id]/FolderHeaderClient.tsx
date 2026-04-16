@@ -15,6 +15,11 @@ export function FolderHeaderClient({
   const [isPending, startTransition] = useTransition();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(folder.name);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleRename = () => {
     if (!name.trim() || name === folder.name) {

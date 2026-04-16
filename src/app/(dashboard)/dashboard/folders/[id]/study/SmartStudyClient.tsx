@@ -34,7 +34,12 @@ export default function SmartStudyClient({
   const [isCorrectState, setIsCorrectState] = useState(false);
   const [log, setLog] = useState<{ word: string; translation: string; quality: number }[]>([]);
   const [done, setDone] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Pre-generate tasks for the session to avoid randomness issues during re-renders
   const tasks = useMemo(() => {
@@ -68,6 +73,16 @@ export default function SmartStudyClient({
   const currentWord = words[currentTask.wordIndex];
   const total = words.length;
 
+  // ─── Audio Effects ──────────────────────────────────────────
+  const playSound = (type: "correct" | "wrong") => {
+    const src = type === "correct" 
+      ? "https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3"
+      : "https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3";
+    const audio = new Audio(src);
+    audio.volume = 0.4;
+    audio.play().catch(() => {}); // Catch browser-blocked autoplay if any
+  };
+
   const question = currentTask.direction === "en-uz" ? currentWord.english_word : currentWord.uzbek_translation;
   const target = currentTask.direction === "en-uz" ? currentWord.uzbek_translation : currentWord.english_word;
   const questionLabel = currentTask.direction === "en-uz" ? "O'zbekchaga tarjima..." : "Inglizchaga tarjima...";
@@ -80,6 +95,7 @@ export default function SmartStudyClient({
 
       setIsCorrectState(correct);
       setAnswered(true);
+      playSound(correct ? "correct" : "wrong");
 
       const quality = binaryToQuality(correct);
       updateWordProgressQuality(currentWord.id, quality, folderId).catch(() => { });
@@ -187,7 +203,7 @@ export default function SmartStudyClient({
   const correctCount = log.filter((l) => l.quality >= 3).length;
 
   return (
-    <div className="min-h-screen flex flex-col p-4 sm:p-6 text-zinc-100">
+    <div className={`min-h-screen flex flex-col p-4 sm:p-6 text-zinc-100 transition-opacity duration-300 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
       <div className="flex-1 flex flex-col max-w-lg mx-auto w-full gap-5 pt-4 sm:pt-6">
 
         {/* Header */}
@@ -199,6 +215,7 @@ export default function SmartStudyClient({
             ← {folderName}
           </button>
           <div className="flex items-center gap-3">
+            <span className="text-zinc-500 text-[10px] uppercase font-black tracking-widest mr-1">Mashq</span>
             <span className="text-emerald-400 font-black text-sm tabular-nums">{correctCount}✓</span>
             <span className="text-zinc-500 font-black text-sm tabular-nums">{index + 1}/{total}</span>
           </div>

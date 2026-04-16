@@ -22,6 +22,11 @@ export default function FlashcardClient({
   const [flipped, setFlipped] = useState(false);
   const [log, setLog] = useState<{ word: string; translation: string; quality: number }[]>([]);
   const [done, setDone] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const current = words[index];
   const total = words.length;

@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { authConfig } from "./auth.config";
 
 export const {
   handlers: { GET, POST },
@@ -10,8 +11,12 @@ export const {
   signIn,
   signOut,
 } = NextAuth({
+  ...authConfig,
   adapter: PrismaAdapter(prisma),
-  session: { strategy: "jwt" },
+  session: { 
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days persistence
+  },
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -20,57 +25,27 @@ export const {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("Authorize called with email:", credentials?.email);
-        if (!credentials?.email || !credentials?.password) {
-          console.log("Missing credentials");
-          return null;
-        }
+        if (!credentials?.email || !credentials?.password) return null;
 
-        try {
-          const user = await prisma.user.findUnique({
-            where: { email: credentials.email as string },
-          });
-          console.log("Found user:", user?.email);
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email as string },
+        });
 
-          if (!user || !user.password) {
-            console.log("User not found or no password");
-            return null;
-          }
+        if (!user || !user.password) return null;
 
-          const isValid = await bcrypt.compare(
-            credentials.password as string,
-            user.password
-          );
-          
-          console.log("Password valid:", isValid);
+        const isValid = await bcrypt.compare(
+          credentials.password as string,
+          user.password
+        );
 
-          if (!isValid) {
-            return null;
-          }
+        if (!isValid) return null;
 
-          return user;
-        } catch (e) {
-          console.log("Error in authorize:", e);
-          return null;
-        }
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        };
       },
     }),
   ],
-  callbacks: {
-    jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-      }
-      return token;
-    },
-    session({ session, token }) {
-      if (session.user && token.id) {
-        session.user.id = token.id as string;
-      }
-      return session;
-    },
-  },
-  pages: {
-    signIn: "/login",
-  },
 });

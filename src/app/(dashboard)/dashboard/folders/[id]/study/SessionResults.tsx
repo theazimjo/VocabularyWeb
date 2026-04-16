@@ -35,9 +35,8 @@ export default function SessionResults({
       <div className="w-full max-w-sm animate-fade-in-up space-y-6 text-center">
         <div className="text-6xl mb-2">{emoji}</div>
         <div>
-          <h1 className="text-3xl font-black text-white tracking-tight">{title}</h1>
           <p className="text-zinc-500 text-sm mt-1 font-medium">
-            {folderName} · {mode.charAt(0).toUpperCase() + mode.slice(1)}
+            {folderName} · {mode === "smart" ? "Mashq qilish" : mode === "flashcard" ? "Flashkarta" : mode}
           </p>
         </div>
 

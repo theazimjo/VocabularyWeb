@@ -42,10 +42,17 @@ export async function getStudySessionWords(
     const p = w.userProgress[0];
     const isNew = !p;
     const isDue = p ? new Date(p.nextReviewDate) <= now : false;
-    const failPriority = p ? p.timesFailed * 3 : 0;
-    const duePriority = isDue ? 10 : 0;
-    const newPriority = isNew ? 8 : 0;
-    const score = newPriority + duePriority + failPriority + Math.random();
+    
+    // PRIORITY LOGIC:
+    // 1. Overdue words get highest score (100+)
+    // 2. Previously failed words get bonus weight
+    // 3. New words get secondary priority (10+)
+    // 4. Random noise (0-5) to keep sessions fresh
+    
+    const duePriority = isDue ? 100 : 0;
+    const failPriority = p ? p.timesFailed * 5 : 0;
+    const newPriority = isNew ? 10 : 0;
+    const score = duePriority + failPriority + newPriority + (Math.random() * 5);
 
     return {
       word: w,
@@ -60,18 +67,17 @@ export async function getStudySessionWords(
   const session_words = scored.slice(0, limit);
   const sessionIds = new Set(session_words.map((s) => s.word.id));
 
-  // Build distractor pools
-  const sameFolderWords = folderWords.filter((w) => !sessionIds.has(w.id));
-  
-  // If not enough words in folder, pick some global words
-  let distractorPool = sameFolderWords;
-  if (distractorPool.length < 5) {
-    const global = await prisma.word.findMany({
-      where: { id: { notIn: [...sessionIds, ...sameFolderWords.map((d) => d.id)] } },
-      take: 50,
-    });
-    distractorPool = [...distractorPool, ...global];
-  }
+  // Build distractor pools - SCOPED TO CURRENT USER ONLY
+  // Get 100 random words from the user's own folders to ensure variety
+  const userDistractors = await prisma.word.findMany({
+    where: { 
+      folder: { userId },
+      id: { notIn: Array.from(sessionIds) }
+    },
+    take: 100,
+  });
+
+  const distractorPool = userDistractors.length > 0 ? userDistractors : folderWords;
 
   return session_words.map(({ word, progress, isNew, isDue }) => {
     const shuffled = [...distractorPool].sort(() => Math.random() - 0.5);
