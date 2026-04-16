@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String?  @unique
+  password  String?  
+  image     String?
+  points    Int      @default(0)
+  createdAt DateTime @default(now())
+
+  progress  UserProgress[]
+  folders   Folder[]
+}
+
+model Folder {
+  id        String   @id @default(cuid())
+  name      String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  words     Word[]
+}
+
+model Word {
+  id                String   @id @default(cuid())
+  english_word      String
+  uzbek_translation String
+  phonetic          String?
+  example           String?
+  difficulty        Int      @default(1)
+  createdAt         DateTime @default(now())
+
+  folderId          String?
+  folder            Folder?  @relation(fields: [folderId], references: [id], onDelete: Cascade)
+
+  userProgress      UserProgress[]
+}
+
+model UserProgress {
+  id             String   @id @default(cuid())
+  userId         String
+  wordId         String
+  isLearned      Boolean  @default(false)
+  nextReviewDate DateTime @default(now())
+  timesFailed    Int      @default(0)
+  timesCorrect   Int      @default(0)
+  easiness       Float    @default(2.5)
+  interval       Int      @default(0)
+
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  word           Word     @relation(fields: [wordId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, wordId])
+}

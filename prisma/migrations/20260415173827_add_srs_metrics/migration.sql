@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "UserProgress" ADD COLUMN     "easiness" DOUBLE PRECISION NOT NULL DEFAULT 2.5,
+ADD COLUMN     "interval" INTEGER NOT NULL DEFAULT 0;
