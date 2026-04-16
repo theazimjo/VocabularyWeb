@@ -69,6 +69,84 @@ export async function updateWordProgressQuality(wordId: string, quality: 0 | 1 |
 }
 
 /**
+ * Batch update word progress. Efficiently reduces DB transaction fatigue
+ * by assembling SM-2 calculations and executing a single prisma.$transaction.
+ */
+export async function batchUpdateWordProgressQuality(
+  updates: { wordId: string; quality: 0 | 1 | 2 | 3 | 4 | 5 }[],
+  folderId?: string
+) {
+  if (!updates.length) return;
+
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+  const userId = session.user.id;
+
+  const wordIds = updates.map((u) => u.wordId);
+
+  // Fetch all existing progress for these words in one query
+  const existingProgressList = await prisma.userProgress.findMany({
+    where: {
+      userId,
+      wordId: { in: wordIds },
+    },
+  });
+
+  const progressMap = new Map(existingProgressList.map((p) => [p.wordId, p]));
+
+  const transactionOps = updates.map(({ wordId, quality }) => {
+    const progress = progressMap.get(wordId);
+
+    const currentState: SM2State = progress
+      ? {
+          easiness: progress.easiness,
+          interval: progress.interval,
+          timesCorrect: progress.timesCorrect,
+          timesFailed: progress.timesFailed,
+          isLearned: progress.isLearned,
+        }
+      : {
+          easiness: 2.5,
+          interval: 0,
+          timesCorrect: 0,
+          timesFailed: 0,
+          isLearned: false,
+        };
+
+    const result = sm2Calculate(currentState, quality);
+
+    if (progress) {
+      return prisma.userProgress.update({
+        where: { id: progress.id },
+        data: {
+          easiness: result.easiness,
+          interval: result.interval,
+          timesCorrect: result.timesCorrect,
+          timesFailed: result.timesFailed,
+          isLearned: result.isLearned,
+          nextReviewDate: result.nextReviewDate,
+        },
+      });
+    } else {
+      return prisma.userProgress.create({
+        data: {
+          userId,
+          wordId,
+          easiness: result.easiness,
+          interval: result.interval,
+          timesCorrect: result.timesCorrect,
+          timesFailed: result.timesFailed,
+          isLearned: result.isLearned,
+          nextReviewDate: result.nextReviewDate,
+        },
+      });
+    }
+  });
+
+  await prisma.$transaction(transactionOps);
+}
+
+/**
  * Legacy binary wrapper (for backward compat)
  */
 export async function updateWordProgress(wordId: string, isCorrect: boolean, folderId?: string) {

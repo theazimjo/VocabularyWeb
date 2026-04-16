@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { updateWordProgress } from "@/actions/progress";
+import { updateWordProgress, batchUpdateWordProgressQuality } from "@/actions/progress";
+import { binaryToQuality } from "@/lib/sm2";
 
 type Option = { text: string; isCorrect: boolean };
 type StudyWord = {
@@ -34,7 +35,7 @@ export default function StudyQuizClient({
   const [score, setScore] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [resultLog, setResultLog] = useState<
-    { word: string; translation: string; correct: boolean }[]
+    { wordId: string; word: string; translation: string; correct: boolean }[]
   >([]);
 
   const currentWord = words[currentIndex];
@@ -50,26 +51,32 @@ export default function StudyQuizClient({
       if (isCorrect) setScore((s) => s + 1);
       setResultLog((prev) => [
         ...prev,
-        { word: currentWord.english_word, translation: currentWord.uzbek_translation, correct: isCorrect },
+        { wordId: currentWord.id, word: currentWord.english_word, translation: currentWord.uzbek_translation, correct: isCorrect },
       ]);
-      // Fire-and-forget SRS update
-      updateWordProgress(currentWord.id, isCorrect).catch(() => {});
     },
     [answerState, currentWord]
   );
 
   const handleNext = useCallback(() => {
     if (currentIndex + 1 >= total) {
+      // BATCH SAVE: Send accumulated tracking results in a single DB transaction!
+      const updates = resultLog.map((l) => ({
+        wordId: l.wordId,
+        quality: binaryToQuality(l.correct)
+      }));
+      batchUpdateWordProgressQuality(updates, folderId).catch(() => {});
+
       setIsComplete(true);
     } else {
       setCurrentIndex((i) => i + 1);
       setAnswerState("idle");
       setSelectedIdx(null);
     }
-  }, [currentIndex, total]);
+  }, [currentIndex, total, resultLog, folderId]);
 
   // Keyboard: 1-4 to answer, Space/Enter to continue
   useEffect(() => {
+
     const onKey = (e: KeyboardEvent) => {
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (answerState !== "idle") {

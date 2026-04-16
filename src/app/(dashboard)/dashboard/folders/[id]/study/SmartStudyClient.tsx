@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { updateWordProgressQuality } from "@/actions/progress";
+import { updateWordProgressQuality, batchUpdateWordProgressQuality } from "@/actions/progress";
 import type { StudyWord } from "@/actions/words";
 import SessionResults from "./SessionResults";
 import { binaryToQuality } from "@/lib/sm2";
@@ -32,7 +32,7 @@ export default function SmartStudyClient({
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null);
   const [answered, setAnswered] = useState(false);
   const [isCorrectState, setIsCorrectState] = useState(false);
-  const [log, setLog] = useState<{ word: string; translation: string; quality: number }[]>([]);
+  const [log, setLog] = useState<{ wordId: string; word: string; translation: string; quality: number }[]>([]);
   const [done, setDone] = useState(false);
   const [mounted, setMounted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -122,17 +122,27 @@ export default function SmartStudyClient({
       }
 
       const quality = binaryToQuality(correct);
-      updateWordProgressQuality(currentWord.id, quality, folderId).catch(() => { });
       setLog((prev) => [
         ...prev,
-        { word: currentWord.english_word, translation: currentWord.uzbek_translation, quality },
+        { wordId: currentWord.id, word: currentWord.english_word, translation: currentWord.uzbek_translation, quality },
       ]);
     },
-    [answered, currentWord, folderId]
+    [answered, currentWord, currentTask.direction, target, speak]
   );
 
   const handleNext = useCallback(() => {
     if (index + 1 >= total) {
+      // BATCH SAVE: Send accumulated tracking results in a single DB transaction!
+      const updates = log.map((l) => ({ wordId: l.wordId, quality: l.quality as 0 | 1 | 2 | 3 | 4 | 5 }));
+      // Be sure to include the very last answer which might NOT be in 'log' closure,
+      // wait, `handleNext` executes after `handleFinishTask` has completed and setState has been scheduled,
+      // but `useCallback` dependency is `log`? Ah! `log` isn't in dependency array.
+      // Better approach: use `setDone` to trigger the save or save the batch in a `useEffect` inside SessionResults, 
+      // but Server Actions can just be called directly here using the most recent state.
+      // Wait, since `handleNext` isn't using `log` inside deps it will have STALE `log`.
+      // Let's rely on the updated log by adding it to deps!
+      batchUpdateWordProgressQuality(updates, folderId).catch(() => {});
+      
       revalidateFolder(folderId);
       setDone(true);
     } else {
@@ -142,7 +152,7 @@ export default function SmartStudyClient({
       setAnswered(false);
       setIsCorrectState(false);
     }
-  }, [index, total, folderId]);
+  }, [index, total, folderId, log]);
 
   // Handle MCQ selection
   const handleMCQSelect = (isCorrect: boolean, idx: number) => {
