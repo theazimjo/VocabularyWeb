@@ -43,11 +43,7 @@ export default function FlashcardClient({
     window.speechSynthesis.speak(utterance);
   }, []);
 
-  useEffect(() => {
-    if (!done && !flipped) {
-      speak(front);
-    }
-  }, [index, done, front, speak, flipped]);
+  // Auto-speech removed at user request
 
   const handleRate = useCallback(
     async (quality: 0 | 1 | 2 | 3 | 4 | 5) => {
@@ -117,7 +113,7 @@ export default function FlashcardClient({
   const progressPct = Math.round((index / total) * 100);
 
   return (
-    <div className={`min-h-screen flex flex-col bg-[#020202] text-zinc-100 font-sans selection:bg-emerald-500/30 overflow-x-hidden relative transition-opacity duration-300 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`h-[100dvh] flex flex-col bg-[#020202] text-zinc-100 font-sans selection:bg-emerald-500/30 overflow-hidden relative transition-opacity duration-300 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
 
       {/* Background Glows */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">

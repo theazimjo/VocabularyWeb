@@ -99,11 +99,7 @@ export default function SmartStudyClient({
   const target = currentTask.direction === "en-uz" ? currentWord.uzbek_translation : currentWord.english_word;
 
   // Speak automatically on question if it's English
-  useEffect(() => {
-    if (mounted && currentTask.direction === "en-uz") {
-      speak(question);
-    }
-  }, [index, currentTask.direction, question, speak, mounted]);
+  // Auto-speech removed at user request
   const questionLabel = currentTask.direction === "en-uz" ? "O'zbekchaga tarjima..." : "Inglizchaga tarjima...";
 
   // ─── Handlers ──────────────────────────────────────────────
@@ -237,7 +233,7 @@ export default function SmartStudyClient({
   const correctCount = log.filter((l) => l.quality >= 3).length;
 
   return (
-    <div className={`min-h-screen flex flex-col p-4 sm:p-6 text-zinc-100 transition-opacity duration-300 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`h-[100dvh] flex flex-col p-4 sm:p-6 text-zinc-100 transition-opacity duration-300 ${mounted ? 'opacity-100' : 'opacity-0'} overflow-hidden`}>
       <div className="flex-1 flex flex-col max-w-lg mx-auto w-full gap-5 pt-4 sm:pt-6">
 
         {/* Header */}

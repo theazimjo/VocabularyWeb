@@ -102,7 +102,7 @@ export default function StudyQuizClient({
     const title = pct >= 80 ? "A'lo!" : pct >= 50 ? "Yaxshi!" : "Davom eting!";
 
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-5 text-zinc-100">
+      <div className="h-[100dvh] flex flex-col items-center justify-center p-5 text-zinc-100 overflow-hidden">
         <div className="w-full max-w-sm animate-fade-in-up space-y-5 text-center">
           <div className="text-5xl">{emoji}</div>
           <div>
@@ -177,7 +177,7 @@ export default function StudyQuizClient({
 
   // ─── QUIZ ────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen flex flex-col p-4 sm:p-6 text-zinc-100">
+    <div className="h-[100dvh] flex flex-col p-4 sm:p-6 text-zinc-100 overflow-hidden">
       <div className="flex-1 flex flex-col max-w-lg mx-auto w-full gap-5 pt-4 sm:pt-8">
 
         {/* Top bar */}

@@ -132,7 +132,7 @@ export default function TypeClient({
   const correctCount = log.filter((l) => l.quality >= 3).length;
 
   return (
-    <div className="min-h-screen flex flex-col p-4 sm:p-6 text-zinc-100">
+    <div className="h-[100dvh] flex flex-col p-4 sm:p-6 text-zinc-100 overflow-hidden">
       <div className="flex-1 flex flex-col max-w-lg mx-auto w-full gap-5 pt-4 sm:pt-8">
         
         {/* Top bar */}
