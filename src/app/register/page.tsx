@@ -51,7 +51,7 @@ export default function RegisterPage() {
               <span className="text-xl font-black tracking-tighter text-white">Vocabry</span>
             </div>
           </Link>
-          <h1 className="text-2xl font-black text-white mb-1">Ro&apos;yxatdan o&apos;tish</h1>
+          <h1 className="text-2xl font-black text-white mb-1">Ro'yxatdan o'tish</h1>
           <p className="text-zinc-500 text-sm font-medium">Yangi akkount yarating</p>
         </div>
 

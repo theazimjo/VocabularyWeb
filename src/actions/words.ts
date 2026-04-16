@@ -64,7 +64,11 @@ export async function getStudySessionWords(
   });
 
   scored.sort((a, b) => b.score - a.score);
-  const session_words = scored.slice(0, limit);
+  let session_words = scored.slice(0, limit);
+  
+  // FINAL SHUFFLE: Ensure the order within the session is mixed
+  session_words = session_words.sort(() => Math.random() - 0.5);
+
   const sessionIds = new Set(session_words.map((s) => s.word.id));
 
   // Build distractor pools - SCOPED TO CURRENT USER ONLY

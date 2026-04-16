@@ -38,33 +38,27 @@ export default async function DashboardPage() {
         {foldersWithWords.length > 0 ? (
           <>
             <section className="space-y-3">
-              <h2 className="text-xs font-black uppercase tracking-[0.15em] text-zinc-600">
+              <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 mb-1 ml-1">
                 Yodlash uchun papkalar
               </h2>
               {foldersWithWords.map((folder) => (
                 <div
                   key={folder.id}
-                  className="bg-white/[0.03] border border-white/10 hover:border-emerald-500/25 rounded-2xl p-4 flex items-center justify-between gap-4 transition-all group"
+                  className="bg-white/[0.03] border border-white/10 active:bg-white/[0.08] sm:hover:border-emerald-500/25 rounded-[20px] p-3.5 sm:p-4 flex items-center justify-between gap-3 sm:gap-4 transition-all group"
                 >
                   <Link
                     href={`/dashboard/folders/${folder.id}`}
                     className="flex items-center gap-3 flex-1 min-w-0"
                   >
-                    <div className="w-10 h-10 shrink-0 bg-emerald-500/10 group-hover:bg-emerald-500/15 rounded-xl flex items-center justify-center text-lg transition-colors">
+                    <div className="w-11 h-11 shrink-0 bg-emerald-500/10 group-active:bg-emerald-500/20 sm:group-hover:bg-emerald-500/15 rounded-2xl flex items-center justify-center text-lg transition-colors">
                       📁
                     </div>
                     <div className="min-w-0">
-                      <h3 className="font-bold text-white group-hover:text-emerald-400 transition-colors truncate">
+                      <h3 className="font-bold text-white sm:group-hover:text-emerald-400 transition-colors truncate text-sm sm:text-base">
                         {folder.name}
                       </h3>
-                      <p className="text-xs text-zinc-600 mt-0.5">{folder._count.words} ta so&apos;z</p>
+                      <p className="text-[10px] sm:text-xs text-zinc-600 mt-0.5 font-bold uppercase tracking-wider">{folder._count.words} ta so'z</p>
                     </div>
-                  </Link>
-                  <Link
-                    href={`/dashboard/folders/${folder.id}/study`}
-                    className="shrink-0 flex items-center gap-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 active:scale-95 border border-emerald-500/20 hover:border-emerald-500/40 rounded-xl px-4 py-2.5 text-emerald-400 text-xs font-black transition-all"
-                  >
-                    🧠 Yodlash
                   </Link>
                 </div>
               ))}
@@ -86,9 +80,9 @@ export default async function DashboardPage() {
           <div className="flex flex-col items-center justify-center text-center py-20 border border-dashed border-white/10 rounded-3xl space-y-4">
             <div className="text-5xl">📚</div>
             <div>
-              <h3 className="text-lg font-black text-white/60">Hali so&apos;z yo&apos;q</h3>
-              <p className="text-zinc-600 text-sm font-medium mt-1 max-w-xs mx-auto">
-                Papka yarating, so&apos;zlarni qo&apos;shing va yodlashni boshlang
+              <h3 className="text-lg font-black text-white/60">Hali so'z yo'q</h3>
+              <p className="text-zinc-500 text-sm max-w-[200px]">
+                Papka yarating, so'zlarni qo'shing va yodlashni boshlang
               </p>
             </div>
             <Link href="/dashboard/folders">

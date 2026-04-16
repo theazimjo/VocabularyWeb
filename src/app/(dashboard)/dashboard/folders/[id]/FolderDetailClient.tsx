@@ -108,10 +108,10 @@ export function FolderDetailClient({
         <div className="flex flex-col gap-0.5">
           <h3 className="text-zinc-500 text-[9px] uppercase font-black tracking-[0.2em] flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            Lug&apos;at
+            Lug'at
           </h3>
           <p className="text-zinc-400 text-[10px] font-black">
-            {initialWords.length} <span className="opacity-40 tracking-tighter ml-1">TA SO&apos;Z</span>
+            {initialWords.length} <span className="opacity-40 tracking-tighter ml-1">TA SO'Z</span>
           </p>
         </div>
         
@@ -120,15 +120,15 @@ export function FolderDetailClient({
           className="flex items-center gap-2 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 px-4 py-2.5 rounded-xl border border-emerald-500/20 transition-all active:scale-95 group"
         >
           <span className="text-lg font-black leading-none group-hover:rotate-90 transition-transform">+</span>
-          <span className="text-[10px] font-black uppercase tracking-widest">Qo&apos;shish</span>
+          <span className="text-[10px] font-black uppercase tracking-widest">Qo'shish</span>
         </button>
       </div>
 
       {initialWords.length === 0 ? (
         <div className="flex flex-col items-center justify-center text-center py-24 px-6 border-2 border-dashed border-white/5 rounded-[2.5rem] bg-zinc-900/10">
           <div className="text-6xl mb-6 grayscale opacity-30">📚</div>
-          <h3 className="text-xl font-black text-white/40 mb-1 tracking-tight">Lug&apos;at hali bo&apos;sh</h3>
-          <p className="text-zinc-700 text-sm font-medium">Boshlash uchun yangi so&apos;z qo&apos;shing</p>
+          <h3 className="text-xl font-black text-white/40 mb-1 tracking-tight">Lug'at hali bo'sh</h3>
+          <p className="text-zinc-700 text-sm font-medium">Boshlash uchun yangi so'z qo'shing</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-3">
@@ -182,7 +182,7 @@ export function FolderDetailClient({
                         className="w-full flex items-center gap-3 px-4 py-3 text-xs font-black text-red-500/60 hover:text-red-400 hover:bg-red-500/10 rounded-xl transition-all mt-1"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        O&apos;chirish
+                        O'chirish
                       </button>
                     </div>
                   )}
@@ -209,7 +209,7 @@ export function FolderDetailClient({
 
             <div className="flex justify-between items-start mb-8">
               <h2 className="text-2xl font-black text-white tracking-tight">
-                {editingWord ? "Tahrirlash" : "Yangi so&apos;z"}
+                {editingWord ? "Tahrirlash" : "Yangi so'z"}
               </h2>
               <button
                 onClick={resetForm}
@@ -231,7 +231,7 @@ export function FolderDetailClient({
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] uppercase tracking-[0.2em] font-black text-zinc-600 ml-1">O&apos;zbekcha</label>
+                  <label className="text-[10px] uppercase tracking-[0.2em] font-black text-zinc-600 ml-1">O'zbekcha</label>
                   <Input
                     placeholder="..."
                     value={form.uzbek_translation}

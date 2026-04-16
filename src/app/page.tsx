@@ -26,7 +26,7 @@ export default async function LandingPage() {
             Vocabry
           </h1>
           <p className="text-lg text-zinc-400 max-w-sm mx-auto leading-relaxed font-medium">
-            Ingliz tili so&apos;zlarini samarali yodlang. O&apos;z papkalaringizni yarating va takrorlash tizimi bilan o&apos;rganing.
+            Ingliz tili so'zlarini samarali yodlang. O'z papkalaringizni yarating va takrorlash tizimi bilan o'rganing.
           </p>
         </div>
 

@@ -194,7 +194,7 @@ export default function FlashcardClient({
             {/* Back Side: Uzbek */}
             <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] rounded-[2rem] sm:rounded-[3rem] border border-emerald-500/20 bg-emerald-500/[0.03] backdrop-blur-3xl shadow-2xl flex flex-col items-center justify-center p-6 sm:p-12 text-center">
               <div className="mb-4 sm:mb-6">
-                <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-black uppercase tracking-[0.3em] text-emerald-500">O&apos;zbekcha</span>
+                <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[9px] font-black uppercase tracking-[0.3em] text-emerald-500">O'zbekcha</span>
               </div>
               <h2
                 className="font-black text-white tracking-tighter leading-tight mb-6"
@@ -219,7 +219,7 @@ export default function FlashcardClient({
 
           <div className={`transition-all duration-500 ${!flipped ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
             <div className="flex flex-col items-center gap-2">
-              <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.2em] text-center">Tarjimani ko&apos;rish uchun bosing</p>
+              <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.2em] text-center">Tarjimani ko'rish uchun bosing</p>
               <div className="hidden sm:flex items-center gap-2">
                 <kbd className="px-2 py-1 rounded bg-zinc-900 border border-white/5 text-[9px] text-zinc-500">SPACE</kbd>
               </div>

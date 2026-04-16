@@ -29,9 +29,9 @@ export default async function StudyPage({
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center p-8 text-zinc-100">
         <div className="text-5xl mb-4">📝</div>
-        <h2 className="text-2xl font-black mb-2">So&apos;zlar yo&apos;q</h2>
+        <h2 className="text-2xl font-black mb-2">So'zlar yo'q</h2>
         <p className="text-zinc-500 mb-6 text-sm max-w-xs mx-auto">
-          Avval papkaga so&apos;zlar qo&apos;shing, keyin yodlashni boshlang.
+          Avval papkaga so'zlar qo'shing, keyin yodlashni boshlang.
         </p>
         <Link
           href={`/dashboard/folders/${id}`}

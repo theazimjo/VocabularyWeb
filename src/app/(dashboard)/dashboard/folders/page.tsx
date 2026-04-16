@@ -11,7 +11,7 @@ export default async function FoldersPage() {
         <header>
           <h1 className="text-3xl font-black tracking-tight text-white">Papkalar</h1>
           <p className="text-zinc-500 text-sm font-medium mt-1">
-            {folders.length} ta papka · {totalWords} ta so&apos;z
+            {folders.length} ta papka · {totalWords} ta so'z
           </p>
         </header>
         <FolderClient initialFolders={folders} />

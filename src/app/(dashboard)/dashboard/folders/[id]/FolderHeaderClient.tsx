@@ -79,7 +79,7 @@ export function FolderHeaderClient({
           </div>
         )}
         <p className="text-zinc-500 text-sm font-medium mt-1">
-          {stats.total} ta so&apos;z · {stats.learned} ta yodlangan
+          {stats.total} ta so'z · {stats.learned} ta yodlangan
         </p>
       </div>
     </div>

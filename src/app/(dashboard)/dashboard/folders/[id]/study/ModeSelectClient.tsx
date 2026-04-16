@@ -79,7 +79,7 @@ export default function ModeSelectClient({
             ← {folderName}
           </button>
           <h1 className="text-2xl font-black text-white tracking-tight">Yodlash rejimi</h1>
-          <p className="text-zinc-600 text-sm mt-1">{words.length} ta so&apos;z tayyor</p>
+          <p className="text-zinc-600 text-sm mt-1">{words.length} ta so'z tayyor</p>
         </div>
 
         {/* Session stats */}
@@ -125,7 +125,7 @@ export default function ModeSelectClient({
 
         {/* Direction selection */}
         <div className="space-y-2">
-          <div className="text-[10px] font-black uppercase tracking-[0.18em] text-zinc-600 pl-1">Yo&apos;nalish</div>
+          <div className="text-[10px] font-black uppercase tracking-[0.18em] text-zinc-600 pl-1">Yo'nalish</div>
           <div className="grid grid-cols-3 gap-2">
             {DIRECTIONS.map((d) => (
               <button

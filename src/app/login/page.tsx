@@ -84,12 +84,17 @@ export default async function LoginPage(props: {
           </form>
         </div>
 
-        <p className="text-center text-sm text-zinc-600 mt-6 font-medium">
-          Akkountingiz yo&apos;qmi?{" "}
-          <Link href="/register" className="text-emerald-400 hover:text-emerald-300 font-bold transition-colors">
-            Ro&apos;yxatdan o&apos;tish
+        <div className="pt-2 text-center text-sm font-medium">
+          <span className="text-zinc-600">
+            Akkountingiz yo'qmi?{" "}
+          </span>
+          <Link
+            href="/register"
+            className="text-emerald-500 hover:text-emerald-400 font-bold"
+          >
+            Ro'yxatdan o'tish
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   );

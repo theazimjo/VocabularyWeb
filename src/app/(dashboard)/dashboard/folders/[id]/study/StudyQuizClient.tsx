@@ -109,7 +109,7 @@ export default function StudyQuizClient({
             <div className="flex justify-center gap-6 text-sm font-bold">
               <div className="text-center">
                 <div className="text-2xl font-black text-emerald-400">{score}</div>
-                <div className="text-zinc-600 text-[10px] uppercase tracking-widest">To&apos;g&apos;ri</div>
+                <div className="text-zinc-600 text-[10px] uppercase tracking-widest">To'g'ri</div>
               </div>
               <div className="w-px bg-white/10" />
               <div className="text-center">
@@ -214,7 +214,7 @@ export default function StudyQuizClient({
           }`}
         >
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 mb-4">
-            O&apos;zbekcha tarjimasini toping
+            O'zbekcha tarjimasini toping
           </p>
           <h2
             className="font-black text-white tracking-tight leading-tight"

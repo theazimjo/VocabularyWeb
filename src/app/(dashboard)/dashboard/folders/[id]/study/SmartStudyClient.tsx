@@ -41,26 +41,29 @@ export default function SmartStudyClient({
     setMounted(true);
   }, []);
 
+  // ─── Task Generation ───────────────────────────────────────
   // Pre-generate tasks for the session to avoid randomness issues during re-renders
   const tasks = useMemo(() => {
     return words.map((word, i) => {
-      // Logic: 
-      // - New words always MCQ (to learn)
-      // - Previously failed words always MCQ (to rebuild confidence)
-      // - Learned or high correct count: can be Typing or MCQ
-
       let type: ExerciseType = "mcq";
       let direction: Direction = Math.random() > 0.5 ? "en-uz" : "uz-en";
 
-      if (word.isNew || word.timesFailed > 1) {
-        type = "mcq";
-      } else if (word.isLearned || word.timesCorrect > 2) {
-        type = Math.random() > 0.4 ? "type" : "mcq";
-      } else if (word.timesCorrect > 0) {
-        type = Math.random() > 0.7 ? "type" : "mcq";
+      const rand = Math.random();
+      
+      // Much more balanced variety
+      if (word.isNew) {
+        // New words: 75% MCQ, 25% Typing
+        type = rand > 0.25 ? "mcq" : "type";
+      } else if (word.timesFailed > 0) {
+        // Recently failed: 60% MCQ (easier), 40% Typing
+        type = rand > 0.4 ? "mcq" : "type";
+      } else {
+        // Learned or known: 50/50 pure random
+        type = rand > 0.5 ? "mcq" : "type";
       }
 
-      // USER RULE: Typing must always be English answer (UZ -> EN)
+      // CRITICAL RULE: Typing must always be UZ -> EN (inputting English)
+      // This ensures the user is practicing English writing, not Uzbek selection.
       if (type === "type") {
         direction = "uz-en";
       }
@@ -74,6 +77,15 @@ export default function SmartStudyClient({
   const total = words.length;
 
   // ─── Audio Effects ──────────────────────────────────────────
+  const speak = useCallback((text: string) => {
+    if (typeof window === "undefined" || !window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    utterance.rate = 0.9;
+    window.speechSynthesis.speak(utterance);
+  }, []);
+
   const playSound = (type: "correct" | "wrong") => {
     const src = type === "correct" 
       ? "https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3"
@@ -85,6 +97,13 @@ export default function SmartStudyClient({
 
   const question = currentTask.direction === "en-uz" ? currentWord.english_word : currentWord.uzbek_translation;
   const target = currentTask.direction === "en-uz" ? currentWord.uzbek_translation : currentWord.english_word;
+
+  // Speak automatically on question if it's English
+  useEffect(() => {
+    if (mounted && currentTask.direction === "en-uz") {
+      speak(question);
+    }
+  }, [index, currentTask.direction, question, speak, mounted]);
   const questionLabel = currentTask.direction === "en-uz" ? "O'zbekchaga tarjima..." : "Inglizchaga tarjima...";
 
   // ─── Handlers ──────────────────────────────────────────────
@@ -96,6 +115,11 @@ export default function SmartStudyClient({
       setIsCorrectState(correct);
       setAnswered(true);
       playSound(correct ? "correct" : "wrong");
+
+      // Speak the answer if it's English
+      if (currentTask.direction === "uz-en") {
+        speak(target);
+      }
 
       const quality = binaryToQuality(correct);
       updateWordProgressQuality(currentWord.id, quality, folderId).catch(() => { });
@@ -252,12 +276,22 @@ export default function SmartStudyClient({
             }`}
         >
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 mb-3">{questionLabel}</p>
-          <h2
-            className="font-black text-white tracking-tight leading-tight"
-            style={{ fontSize: "clamp(1.8rem, 8vw, 4rem)" }}
-          >
-            {question}
-          </h2>
+          <div className="flex items-center justify-center gap-4">
+            <h2
+              className="font-black text-white tracking-tight leading-tight"
+              style={{ fontSize: "clamp(1.8rem, 8vw, 4rem)" }}
+            >
+              {question}
+            </h2>
+            {currentTask.direction === "en-uz" && (
+              <button
+                onClick={() => speak(question)}
+                className="w-10 h-10 rounded-full bg-white/5 border border-white/5 flex items-center justify-center hover:bg-emerald-500 hover:text-black transition-all active:scale-90 shrink-0"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M11 5L6 9H2v6h4l5 4V5z"></path></svg>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Exercise Area */}
