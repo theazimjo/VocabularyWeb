@@ -49,7 +49,6 @@ export default async function StudyPage({
         words={words}
         folderId={id}
         folderName={folder.name}
-        direction="mixed"
       />
     );
   }

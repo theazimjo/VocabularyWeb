@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { updateWordProgressQuality } from "@/actions/progress";
+import { batchUpdateWordProgressQuality } from "@/actions/progress";
 import type { StudyWord } from "@/actions/words";
 import { FLASHCARD_RATINGS } from "@/lib/sm2";
 import SessionResults from "./SessionResults";
@@ -20,7 +20,7 @@ export default function FlashcardClient({
   const router = useRouter();
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const [log, setLog] = useState<{ word: string; translation: string; quality: number }[]>([]);
+  const [log, setLog] = useState<{ wordId: string; word: string; translation: string; quality: number }[]>([]);
   const [done, setDone] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -51,13 +51,23 @@ export default function FlashcardClient({
 
   const handleRate = useCallback(
     async (quality: 0 | 1 | 2 | 3 | 4 | 5) => {
-      setLog((prev) => [
-        ...prev,
-        { word: current.english_word, translation: current.uzbek_translation, quality },
-      ]);
-      updateWordProgressQuality(current.id, quality, folderId).catch(() => { });
+      const newEntry = {
+        wordId: current.id,
+        word: current.english_word,
+        translation: current.uzbek_translation,
+        quality,
+      };
+
+      setLog((prev) => [...prev, newEntry]);
 
       if (index + 1 >= total) {
+        // BATCH SAVE: Send accumulated tracking results in a single DB transaction!
+        const updates = [...log, newEntry].map((l) => ({
+          wordId: l.wordId,
+          quality: l.quality as 0 | 1 | 2 | 3 | 4 | 5,
+        }));
+        batchUpdateWordProgressQuality(updates, folderId).catch(() => {});
+
         revalidateFolder(folderId);
         setDone(true);
       } else {
@@ -65,7 +75,7 @@ export default function FlashcardClient({
         setFlipped(false);
       }
     },
-    [current, index, total, folderId]
+    [current, index, total, folderId, log]
   );
 
   useEffect(() => {
