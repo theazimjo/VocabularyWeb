@@ -25,8 +25,8 @@ export default function RootLayout({
       style={{ colorScheme: "dark" }}
       suppressHydrationWarning
     >
-      <body 
-        className="min-h-full flex flex-col font-sans bg-background text-foreground relative" 
+      <body
+        className="min-h-full flex flex-col font-sans bg-background text-foreground relative"
         suppressHydrationWarning
       >
         <main className="relative z-10 flex-1 flex flex-col">

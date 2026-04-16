@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { createFolder, deleteFolder } from "@/actions/folders";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
@@ -9,6 +9,11 @@ import { toast } from "sonner";
 export function FolderClient({ initialFolders }: { initialFolders: any[] }) {
   const [isPending, startTransition] = useTransition();
   const [folderName, setFolderName] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,7 +44,7 @@ export function FolderClient({ initialFolders }: { initialFolders: any[] }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 transition-opacity duration-300 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
       {/* Create form - Mobile optimized: simple stack or flex-row depending on width */}
       <form onSubmit={handleCreate} className="flex flex-col sm:flex-row gap-2 sm:gap-3">
         <Input

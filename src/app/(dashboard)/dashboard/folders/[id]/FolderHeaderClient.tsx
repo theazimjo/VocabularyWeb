@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import { updateFolder } from "@/actions/folders";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -41,7 +41,7 @@ export function FolderHeaderClient({
   };
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className={`flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-opacity duration-300 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
       <div className="flex-1 min-w-0">
         {isEditing ? (
           <div className="flex items-center gap-2 max-w-md animate-in slide-in-from-left-2 duration-200">

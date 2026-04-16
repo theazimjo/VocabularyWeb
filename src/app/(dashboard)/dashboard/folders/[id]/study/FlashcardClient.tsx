@@ -107,7 +107,7 @@ export default function FlashcardClient({
   const progressPct = Math.round((index / total) * 100);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#020202] p-4 sm:p-8 text-zinc-100 font-sans selection:bg-emerald-500/30 overflow-x-hidden relative">
+    <div className={`min-h-screen flex flex-col bg-[#020202] text-zinc-100 font-sans selection:bg-emerald-500/30 overflow-x-hidden relative transition-opacity duration-300 ${mounted ? 'opacity-100' : 'opacity-0'}`}>
 
       {/* Background Glows */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
