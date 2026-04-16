@@ -76,3 +76,32 @@ export async function deleteWord(wordId: string) {
   revalidatePath(`/dashboard/folders/${word.folderId}`);
   revalidatePath(`/dashboard/folders`);
 }
+
+export async function updateWord(
+  wordId: string,
+  data: { english_word: string; uzbek_translation: string; example?: string }
+) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const word = await prisma.word.findUnique({
+    where: { id: wordId },
+    include: { folder: true },
+  });
+
+  if (!word || !word.folder || word.folder.userId !== session.user.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const updated = await prisma.word.update({
+    where: { id: wordId },
+    data: {
+      english_word: data.english_word,
+      uzbek_translation: data.uzbek_translation,
+      example: data.example || null,
+    },
+  });
+
+  revalidatePath(`/dashboard/folders/${word.folderId}`);
+  return updated;
+}

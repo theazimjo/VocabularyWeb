@@ -55,3 +55,25 @@ export async function deleteFolder(folderId: string) {
 
   revalidatePath("/dashboard/folders");
 }
+
+export async function updateFolder(folderId: string, name: string) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+
+  const folder = await prisma.folder.findUnique({
+    where: { id: folderId },
+  });
+
+  if (!folder || folder.userId !== session.user.id) {
+    throw new Error("Unauthorized");
+  }
+
+  const updated = await prisma.folder.update({
+    where: { id: folderId },
+    data: { name },
+  });
+
+  revalidatePath(`/dashboard/folders/${folderId}`);
+  revalidatePath("/dashboard/folders");
+  return updated;
+}

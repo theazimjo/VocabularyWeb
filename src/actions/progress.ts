@@ -2,101 +2,98 @@
 
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/auth";
+import { sm2Calculate, binaryToQuality } from "@/lib/sm2";
+import type { SM2State } from "@/lib/sm2";
+import { revalidatePath } from "next/cache";
 
-export async function updateWordProgress(wordId: string, isCorrect: boolean) {
+/**
+ * Update word progress with a quality rating (0-5, SM-2 scale)
+ * quality: 0=blackout, 1=wrong, 2=wrong but close, 3=correct barely, 4=correct, 5=perfect
+ */
+export async function updateWordProgressQuality(wordId: string, quality: 0 | 1 | 2 | 3 | 4 | 5, folderId?: string) {
   const session = await auth();
   if (!session?.user?.id) throw new Error("Unauthorized");
-
   const userId = session.user.id;
 
   const progress = await prisma.userProgress.findUnique({
     where: { userId_wordId: { userId, wordId } },
   });
 
-  const now = new Date();
-  
-  let interval = 1;
-  let easiness = 2.5;
-  let timesCorrect = 0;
-  let timesFailed = 0;
+  const currentState: SM2State = progress
+    ? {
+        easiness: progress.easiness,
+        interval: progress.interval,
+        timesCorrect: progress.timesCorrect,
+        timesFailed: progress.timesFailed,
+        isLearned: progress.isLearned,
+      }
+    : {
+        easiness: 2.5,
+        interval: 0,
+        timesCorrect: 0,
+        timesFailed: 0,
+        isLearned: false,
+      };
+
+  const result = sm2Calculate(currentState, quality);
 
   if (progress) {
-    timesCorrect = isCorrect ? progress.timesCorrect + 1 : progress.timesCorrect;
-    timesFailed = isCorrect ? progress.timesFailed : progress.timesFailed + 1;
-    easiness = progress.easiness;
-    
-    if (isCorrect) {
-        // SM-2 logic
-        if (progress.timesCorrect === 0) {
-            interval = 1;
-        } else if (progress.timesCorrect === 1) {
-            interval = 6;
-        } else {
-            interval = Math.round(progress.interval * easiness);
-        }
-        easiness = Math.max(1.3, easiness + 0.1);
-    } else {
-        interval = 1;
-        easiness = Math.max(1.3, easiness - 0.2);
-    }
-
     await prisma.userProgress.update({
       where: { id: progress.id },
       data: {
-        timesCorrect,
-        timesFailed,
-        easiness,
-        interval,
-        nextReviewDate: new Date(now.getTime() + (interval * 24 * 60 * 60 * 1000)),
-        isLearned: timesCorrect > 3,
+        easiness: result.easiness,
+        interval: result.interval,
+        timesCorrect: result.timesCorrect,
+        timesFailed: result.timesFailed,
+        isLearned: result.isLearned,
+        nextReviewDate: result.nextReviewDate,
       },
     });
   } else {
-    // First attempt
-    interval = isCorrect ? 1 : 1;
     await prisma.userProgress.create({
       data: {
         userId,
         wordId,
-        timesCorrect: isCorrect ? 1 : 0,
-        timesFailed: isCorrect ? 0 : 1,
-        interval,
-        easiness: 2.5,
-        nextReviewDate: new Date(now.getTime() + (interval * 24 * 60 * 60 * 1000)),
+        easiness: result.easiness,
+        interval: result.interval,
+        timesCorrect: result.timesCorrect,
+        timesFailed: result.timesFailed,
+        isLearned: result.isLearned,
+        nextReviewDate: result.nextReviewDate,
       },
     });
   }
 
-  // Update user points
-  if (isCorrect) {
-    await prisma.user.update({
-        where: { id: userId },
-        data: { points: { increment: 10 } }
-    });
-  }
+  // Removed aggressive revalidatePath that was breaking study session stability.
+  // Revalidation should be handled at the end of the session or on navigation.
 }
 
-export async function getUserStats() {
-    const session = await auth();
-    if (!session?.user?.id) throw new Error("Unauthorized");
-    const userId = session.user.id;
+/**
+ * Legacy binary wrapper (for backward compat)
+ */
+export async function updateWordProgress(wordId: string, isCorrect: boolean, folderId?: string) {
+  return updateWordProgressQuality(wordId, binaryToQuality(isCorrect), folderId);
+}
 
-    const wordsLearned = await prisma.userProgress.count({
-        where: { userId, isLearned: true }
-    });
+export async function getFolderStats(folderId: string) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+  const userId = session.user.id;
 
-    const totalStudied = await prisma.userProgress.count({
-        where: { userId }
-    });
+  const words = await prisma.word.findMany({
+    where: { folderId },
+    include: {
+      userProgress: { where: { userId } },
+    },
+  });
 
-    const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { points: true }
-    });
+  const total = words.length;
+  const learned = words.filter((w) => w.userProgress[0]?.isLearned).length;
+  const seen = words.filter((w) => w.userProgress.length > 0).length;
+  const dueNow = words.filter((w) => {
+    const p = w.userProgress[0];
+    return p && new Date(p.nextReviewDate) <= new Date();
+  }).length;
 
-    return { 
-        wordsLearned, 
-        totalStudied, 
-        points: user?.points || 0 
-    };
+  return { total, learned, seen, unseen: total - seen, dueNow };
 }
