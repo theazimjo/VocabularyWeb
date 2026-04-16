@@ -66,7 +66,7 @@ export default function FlashcardClient({
           wordId: l.wordId,
           quality: l.quality as 0 | 1 | 2 | 3 | 4 | 5,
         }));
-        batchUpdateWordProgressQuality(updates, folderId).catch(() => {});
+        batchUpdateWordProgressQuality(updates, folderId).catch(() => { });
 
         revalidateFolder(folderId);
         setDone(true);
