@@ -11,6 +11,15 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "Vocabry | So'z yodlash",
   description: "Ingliz tili so'zlarini samarali yodlang.",
+  manifest: "/manifest.json",
+  icons: {
+    apple: "/icons/icon-192.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Vocabry",
+  },
 };
 
 export default function RootLayout({
