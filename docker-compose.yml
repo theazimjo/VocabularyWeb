@@ -32,6 +32,7 @@ services:
     environment:
       # Ensure db host matches the service name above
       - DATABASE_URL=postgresql://postgres:password@db:5432/vocabry?schema=public
+      - AUTH_TRUST_HOST=true
     depends_on:
       db:
         condition: service_healthy
