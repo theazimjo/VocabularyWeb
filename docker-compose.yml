@@ -6,13 +6,36 @@ services:
     container_name: vocabry-postgres
     restart: always
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: vocabry
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=vocabry
     ports:
       - "51234:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d vocabry"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vocabry-app
+    restart: always
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      # Ensure db host matches the service name above
+      - DATABASE_URL=postgresql://postgres:password@db:5432/vocabry?schema=public
+    depends_on:
+      db:
+        condition: service_healthy
+
 
 volumes:
   postgres_data:
