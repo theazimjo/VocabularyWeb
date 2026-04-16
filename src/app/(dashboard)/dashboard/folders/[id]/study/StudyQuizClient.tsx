@@ -111,7 +111,7 @@ export default function StudyQuizClient({
           </div>
 
           {/* Score circle */}
-          <div className="bg-white/[0.03] border border-white/10 rounded-3xl p-6 space-y-4">
+          <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 sm:p-6 space-y-4">
             <div className="text-5xl font-black text-emerald-400 tabular-nums">{pct}%</div>
             <div className="flex justify-center gap-6 text-sm font-bold">
               <div className="text-center">
@@ -178,7 +178,7 @@ export default function StudyQuizClient({
   // ─── QUIZ ────────────────────────────────────────────────────
   return (
     <div className="h-[100dvh] flex flex-col p-4 sm:p-6 text-zinc-100 overflow-hidden">
-      <div className="flex-1 flex flex-col max-w-lg mx-auto w-full gap-5 pt-4 sm:pt-8">
+      <div className="flex-1 flex flex-col max-w-lg mx-auto w-full gap-2 sm:gap-5 pt-2 sm:pt-8 overflow-hidden">
 
         {/* Top bar */}
         <div className="flex justify-between items-center">
@@ -212,7 +212,7 @@ export default function StudyQuizClient({
 
         {/* Question card */}
         <div
-          className={`flex-none bg-white/[0.03] border rounded-3xl flex flex-col items-center justify-center text-center transition-all duration-300 py-10 px-6 ${
+          className={`flex-none bg-white/[0.03] border rounded-2xl flex flex-col items-center justify-center text-center transition-all duration-300 py-6 sm:py-10 px-4 sm:px-6 ${
             answerState === "correct"
               ? "border-emerald-500/40 bg-emerald-500/5"
               : answerState === "wrong"

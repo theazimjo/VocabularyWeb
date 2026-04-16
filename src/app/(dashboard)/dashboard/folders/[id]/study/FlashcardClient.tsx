@@ -121,7 +121,7 @@ export default function FlashcardClient({
         <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-500/5 blur-[150px] rounded-full" />
       </div>
 
-      <div className="flex-1 flex flex-col max-w-xl mx-auto w-full gap-5 sm:gap-8 pt-2 sm:pt-8 z-10 relative">
+      <div className="flex-1 flex flex-col max-w-xl mx-auto w-full gap-2 sm:gap-8 pt-2 sm:pt-8 z-10 relative overflow-hidden">
 
         {/* Header Section */}
         <header className="flex flex-col gap-4 sm:gap-6">
@@ -172,7 +172,7 @@ export default function FlashcardClient({
           </div>
 
           <div
-            className={`cursor-pointer w-full h-full min-h-[320px] sm:min-h-[420px] transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] [transform-style:preserve-3d] relative ${flipped ? "[transform:rotateY(180deg)]" : ""
+            className={`cursor-pointer w-full flex-1 h-0 transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] [transform-style:preserve-3d] relative ${flipped ? "[transform:rotateY(180deg)]" : ""
               }`}
             onClick={() => setFlipped(!flipped)}
           >
@@ -221,7 +221,7 @@ export default function FlashcardClient({
         </div>
 
         {/* Global Controls */}
-        <div className="min-h-[140px] flex flex-col justify-end gap-4 sm:gap-6 pb-4 sm:pb-6">
+        <div className="min-h-[100px] flex flex-col justify-end gap-2 sm:gap-6 pb-2 sm:pb-6">
 
           <div className={`transition-all duration-500 ${!flipped ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
             <div className="flex flex-col items-center gap-2">

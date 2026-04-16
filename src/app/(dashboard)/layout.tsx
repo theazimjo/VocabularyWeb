@@ -12,9 +12,9 @@ export default function DashboardGroupLayout({
       <NavVisibilityWrapper>
         <DashboardHeader />
       </NavVisibilityWrapper>
-      <main className="flex-1 pb-20 sm:pb-0">
+      <NavVisibilityWrapper type="padding">
         {children}
-      </main>
+      </NavVisibilityWrapper>
       <NavVisibilityWrapper>
         <BottomNav />
       </NavVisibilityWrapper>

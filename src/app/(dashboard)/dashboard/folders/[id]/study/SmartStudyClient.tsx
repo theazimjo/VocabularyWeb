@@ -234,7 +234,7 @@ export default function SmartStudyClient({
 
   return (
     <div className={`h-[100dvh] flex flex-col p-4 sm:p-6 text-zinc-100 transition-opacity duration-300 ${mounted ? 'opacity-100' : 'opacity-0'} overflow-hidden`}>
-      <div className="flex-1 flex flex-col max-w-lg mx-auto w-full gap-5 pt-4 sm:pt-6">
+      <div className="flex-1 flex flex-col max-w-lg mx-auto w-full gap-2 sm:gap-5 pt-2 sm:pt-6 overflow-hidden">
 
         {/* Header */}
         <div className="flex justify-between items-center">
@@ -274,7 +274,7 @@ export default function SmartStudyClient({
 
         {/* Question card */}
         <div
-          className={`bg-white/[0.03] border rounded-3xl p-8 text-center transition-all duration-300 ${answered
+          className={`bg-white/[0.03] border rounded-2xl p-4 sm:p-8 text-center transition-all duration-300 ${answered
               ? isCorrectState
                 ? "border-emerald-500/30 bg-emerald-500/5"
                 : "border-red-500/30 bg-red-500/5"
