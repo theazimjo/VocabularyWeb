@@ -14,7 +14,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d vocabry"]
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d vocabry" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -36,7 +36,6 @@ services:
     depends_on:
       db:
         condition: service_healthy
-
 
 volumes:
   postgres_data:
