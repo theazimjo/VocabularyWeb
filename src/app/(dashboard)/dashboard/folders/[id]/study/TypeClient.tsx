@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { batchUpdateWordProgressQuality } from "@/actions/progress";
 import type { StudyWord } from "@/actions/words";
 import SessionResults from "./SessionResults";
 import { revalidateFolder } from "@/actions/revalidate";
@@ -25,7 +26,7 @@ export default function TypeClient({
   const [input, setInput] = useState("");
   const [answered, setAnswered] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
-  const [log, setLog] = useState<{ word: string; translation: string; quality: number }[]>([]);
+  const [log, setLog] = useState<{ wordId: string; word: string; translation: string; quality: number }[]>([]);
   const [done, setDone] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -55,17 +56,20 @@ export default function TypeClient({
       setAnswered(true);
 
       const quality = binaryToQuality(correct);
-      updateWordProgressQuality(current.id, quality, folderId).catch(() => {});
       setLog((prev) => [
         ...prev,
-        { word: current.english_word, translation: current.uzbek_translation, quality },
+        { wordId: current.id, word: current.english_word, translation: current.uzbek_translation, quality },
       ]);
     },
-    [answered, input, target, current, folderId]
+    [answered, input, target, current]
   );
 
   const handleNext = useCallback(() => {
     if (index + 1 >= total) {
+      // BATCH SAVE: Send accumulated tracking results in a single DB transaction!
+      const updates = log.map((l) => ({ wordId: l.wordId, quality: l.quality as 0 | 1 | 2 | 3 | 4 | 5 }));
+      batchUpdateWordProgressQuality(updates, folderId).catch(() => {});
+
       revalidateFolder(folderId);
       setDone(true);
     } else {
@@ -76,7 +80,7 @@ export default function TypeClient({
       // Auto-focus after a short delay to allow React to render
       setTimeout(() => inputRef.current?.focus(), 50);
     }
-  }, [index, total, folderId]);
+  }, [index, total, folderId, log]);
 
   useEffect(() => {
     inputRef.current?.focus();
